@@ -5,12 +5,25 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
     // Public variables will show up in the inspector
-    public float speed;
+    public float rollSpeed;
+    private Vector3 rollMovement;
+
+    private float moveHorizontal;
+    private float moveVertical;
+
+    public float jumpForce;
+    private Vector3 jumpMovement;
+
     public Text countText;
     public Text winText;
+    
+    private bool grounded = true;
 
     private Rigidbody rb;
     private int count;
+
+    public Material defaultMaterial;
+    public Material alternateMaterial;
 
     // Called on the first frame in which the script is active
     void Start() {
@@ -21,18 +34,37 @@ public class PlayerController : MonoBehaviour {
         winText.text = "";
     }
 
-	// Update has an irregular timeline (time to process frames can vary)
-	// void Update () {}
+    void OnCollisionStay() {
+        grounded = true;
+        GetComponent<MeshRenderer>().material = alternateMaterial;
+    }
 
-    // FixedUpdate has a regular timeline (time to process each frame is always the same)
-    // Use for physics
+	// Time to process frames can vary, accept input here
+	void Update () {
+        if (grounded == true && Input.GetButtonDown("Jump")) {
+            GetComponent<MeshRenderer>().material = defaultMaterial;
+            grounded = false;
+
+            // Set jump vector (jump height)
+            jumpMovement = new Vector3(0, 2.0f, 0);
+            
+            // Make the ball jump
+            rb.AddForce(jumpMovement * jumpForce, ForceMode.Impulse);
+        }
+    }
+
+    // FixedUpdate has a regular timeline , apply physics here
     void FixedUpdate() {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
-
-        // Create new vector from (x, y, z)
-        Vector3 movement = new Vector3(moveHorizontal, 0, moveVertical);
-        rb.AddForce(movement * speed);
+        if (grounded == true) {
+            moveHorizontal = Input.GetAxis("Horizontal");
+            moveVertical = Input.GetAxis("Vertical");
+            
+            // Create new vector from input
+            rollMovement = new Vector3(moveHorizontal, 0, moveVertical);
+            
+            // Roll the ball
+            rb.AddForce(rollMovement * rollSpeed);
+        }
     }
 
     void OnTriggerEnter(Collider other) {
