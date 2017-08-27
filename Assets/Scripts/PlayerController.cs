@@ -33,16 +33,21 @@ public class PlayerController : MonoBehaviour {
         SetCountText();
         winText.text = "";
     }
-
-    void OnCollisionStay() {
+    
+    void OnCollisionEnter(Collision collision) {
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            Debug.DrawRay(contact.point, contact.normal, Color.green, 20);
+        }
+        
         grounded = true;
-        GetComponent<MeshRenderer>().material = alternateMaterial;
+        //GetComponent<MeshRenderer>().material = alternateMaterial;
     }
 
 	// Time to process frames can vary, accept input here
 	void Update () {
         if (grounded == true && Input.GetButtonDown("Jump")) {
-            GetComponent<MeshRenderer>().material = defaultMaterial;
+            //GetComponent<MeshRenderer>().material = defaultMaterial;
             grounded = false;
 
             // Set jump vector (jump height)
