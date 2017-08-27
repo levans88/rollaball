@@ -34,18 +34,29 @@ public class PlayerController : MonoBehaviour {
         winText.text = "";
     }
     
-    void OnCollisionEnter(Collision collision) {
-        foreach (ContactPoint contact in collision.contacts)
-        {
-            Debug.DrawRay(contact.point, contact.normal, Color.green, 20);
-        }
+    // Using a Raycast to detect collision instead to limit to bottom of sphere
+    //
+    // void OnCollisionEnter(Collision collision) {
+    //     foreach (ContactPoint contact in collision.contacts)
+    //     {
+    //         Debug.DrawRay(contact.point, contact.normal, Color.green, 20);
+    //     }
         
-        grounded = true;
-        //GetComponent<MeshRenderer>().material = alternateMaterial;
-    }
+    //     grounded = true;
+    //     //GetComponent<MeshRenderer>().material = alternateMaterial;
+    // }
 
 	// Time to process frames can vary, accept input here
 	void Update () {
+        // Jumping
+
+        // Get up and down directions ignoring the transform's rotation
+        // (otherwise Transform.up would be used instead)
+        Vector3 up = Vector3.up;    //0,1,0
+        var down = up * -1;
+
+        grounded = Physics.Raycast(transform.position, down, 0.75f);
+
         if (grounded == true && Input.GetButtonDown("Jump")) {
             //GetComponent<MeshRenderer>().material = defaultMaterial;
             grounded = false;
