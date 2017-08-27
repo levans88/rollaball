@@ -46,6 +46,11 @@ public class PlayerController : MonoBehaviour {
     //     //GetComponent<MeshRenderer>().material = alternateMaterial;
     // }
 
+    // Temporarily testing "squish"
+    // void OnCollisionEnter(Collision collision) {
+    //     transform.localScale = new Vector3(transform.localScale.x + .25f, transform.localScale.y - .25f, transform.localScale.z);
+    // }
+
 	// Time to process frames can vary, accept input here
 	void Update () {
         // Jumping
@@ -54,12 +59,16 @@ public class PlayerController : MonoBehaviour {
         // (otherwise Transform.up would be used instead)
         Vector3 up = Vector3.up;    //0,1,0
         var down = up * -1;
-
+        
+        // Player is on the ground if a downward raycast just outside the player's radius hits a collider
         grounded = Physics.Raycast(transform.position, down, 0.75f);
 
         if (grounded == true && Input.GetButtonDown("Jump")) {
             //GetComponent<MeshRenderer>().material = defaultMaterial;
             grounded = false;
+            
+            // Testing "stretch"
+            //transform.localScale = new Vector3(transform.localScale.x - .25f, transform.localScale.y + .25f, transform.localScale.z);
 
             // Set jump vector (jump height)
             jumpMovement = new Vector3(0, 2.0f, 0);
