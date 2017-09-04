@@ -6,8 +6,9 @@ using UnityEngine;
 public class TrackBuilder : MonoBehaviour {
 	public Transform trackSegment;
 	public Texture2D sourceImage;
-	public int widthInSegments;
-	public int heightInSegments;
+	public int widthInSegments = 8;
+	public int heightInSegments = 8;
+	public float gap = .05f;
 
 	private int srcWidth;
 	private int srcHeight;
@@ -131,11 +132,10 @@ public class TrackBuilder : MonoBehaviour {
 					var offsetX = 0;
 					var offsetY = 0;
 
-					// xpos = offset + array[x] + un-zero-index + segment width + gap
-					var xpos = offsetX + x + 1 + trackSegment.localScale.x + .05f;
-					
-					// ypos = offset + array[y] + un-zero-index + segment width + height
-					var ypos = offsetY + y + 1 + trackSegment.localScale.y + 1;
+					// pos = offset + ((array[x] + un-zero-index) * (segment width + gap)
+					var xpos = offsetX + ((x + 1) * (trackSegment.localScale.x + gap));
+
+					var ypos = offsetY + ((y + 1) * (trackSegment.localScale.x + gap));
 
 					Instantiate(trackSegment, new Vector3(xpos, ypos, 0), Quaternion.identity);
 				}
