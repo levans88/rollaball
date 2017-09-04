@@ -122,9 +122,10 @@ public class TrackBuilder : MonoBehaviour {
 
 						// Test - Find the highest (last) pixel in chunk
 						// If we're on the last pixel in the chunk
-						if (x == (chunkIndexX * chunkSizeX) + chunkSizeX) {
+						if (x == ((chunkIndexX * chunkSizeX) + chunkSizeX) - 1) {
 							//if (foundLast == false) {
 								//foundLast = true;
+								Debug.Log("Last: " + last[0,0] + ", " + last[0,1]);
 								line[1,0] = last[0,0];
 								line[1,1] = last[0,1];
 							//}
@@ -141,12 +142,35 @@ public class TrackBuilder : MonoBehaviour {
 
 					// Test - Use first and last pixels to get chunk slope
 					// Slope = "change in Y" / "change in X"
+					// Convert slope to angle
 					// Write chunk slope to slopes array
-					var deltaY = line[1,1] - line[0,1];
-					var deltaX = line[1,0] - line[0,0];
-					float slope = deltaY / deltaX;
+					float deltaY = line[1,1] - line[0,1];
+					float deltaX = line[1,0] - line[0,0];
+					//float slope = deltaY / deltaX;
+					
+					// SOHCAHTOA...
+					//Get inverse tangent of O/A and convert from rad to deg
 
-					slopes[chunkIndexX,chunkIndexY] = slope;
+					if (deltaY == 0 && deltaX == 0) {
+						
+					}
+					
+					if (deltaY == 0 && deltaX !=0) {
+
+					}
+
+					if (deltaY != 0 && deltaX == 0) {
+
+					}
+
+					if 
+
+					var angleZrad = (Mathf.Atan(deltaY / deltaX));
+					var angleZ = angleZrad * Mathf.Rad2Deg;
+					//Debug.Log(angleZrad);
+					//Debug.Log(angleZ);
+
+					slopes[chunkIndexX,chunkIndexY] = angleZ;
 				}
 				else {
 					// Write there is NO segment to segments array
