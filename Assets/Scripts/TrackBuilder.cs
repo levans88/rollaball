@@ -14,6 +14,8 @@ public class TrackBuilder : MonoBehaviour {
 	private int srcHeight;
 	private int[,] pixelArrayBW;
 	private int[,] segments;
+	private int[,] line;
+	private float[,] slopes;
 
 	// Use this for initialization
 	void Start () {
@@ -72,6 +74,11 @@ public class TrackBuilder : MonoBehaviour {
 	// Convert pixelArrayBW to array of tiles with user specified width and height
 	private void buildSegmentsArray() {
 		segments = new int[widthInSegments,heightInSegments];
+
+		// Test - Store slopes 
+		slopes = new float[widthInSegments,heightInSegments];
+		int[,] line = new int[2,2];
+
 		var segmentCount = 0;
 
 		// Chunks are like rows and columns
@@ -94,9 +101,34 @@ public class TrackBuilder : MonoBehaviour {
 
 				// While x is within the current chunk...
 				while (x >= chunkIndexX * chunkSizeX && x < (chunkIndexX * chunkSizeX) + chunkSizeX) {
+					var foundFirst = false;
+					//var foundLast = false;
+					
 					// If the value at x,y is 1, count it as a black pixel
 					if (pixelArrayBW[x,y] == 1) {
 						coloredPixelCount++;
+
+						// Test - Store last black pixel coordinates found
+						 int[,] last = new int[1,2];
+						 last[0,0] = x;
+						 last[0,1] = y;
+
+						// Test - Find lowest (first) pixel in chunk
+						if (foundFirst == false) {
+							foundFirst = true;
+							line[0,0] = x;
+							line[0,1] = y;
+						}
+
+						// Test - Find the highest (last) pixel in chunk
+						// If we're on the last pixel in the chunk
+						if (x == (chunkIndexX * chunkSizeX) + chunkSizeX) {
+							//if (foundLast == false) {
+								//foundLast = true;
+								line[1,0] = last[0,0];
+								line[1,1] = last[0,1];
+							//}
+						}
 					}
 					x++;
 				}
@@ -106,9 +138,18 @@ public class TrackBuilder : MonoBehaviour {
 					// Write segment to segments array
 					segments[chunkIndexX,chunkIndexY] = 1;
 					segmentCount++;
+
+					// Test - Use first and last pixels to get chunk slope
+					// Slope = "change in Y" / "change in X"
+					// Write chunk slope to slopes array
+					var deltaY = line[1,1] - line[0,1];
+					var deltaX = line[1,0] - line[0,0];
+					float slope = deltaY / deltaX;
+
+					slopes[chunkIndexX,chunkIndexY] = slope;
 				}
 				else {
-					// Write there is NO tile to tiles array
+					// Write there is NO segment to segments array
 					segments[chunkIndexX,chunkIndexY] = 0;
 				}
 
@@ -137,9 +178,8 @@ public class TrackBuilder : MonoBehaviour {
 
 					var ypos = offsetY + ((y + 1) * (trackSegment.localScale.x + gap));
 
-					Instantiate(trackSegment, new Vector3(xpos, ypos, 0), Quaternion.identity);
+					Instantiate(trackSegment, new Vector3(xpos, ypos, 0), Quaternion.identity).Rotate(0,0,slopes[x,y]);
 				}
-				// y = mx + b
 			}
 		}
 	}
